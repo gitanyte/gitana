@@ -343,6 +343,32 @@ function avatarSVG(a, size = 160) {
       break;
   }
 
+  // Jei yra autorės nuotrauka (js/photo.js), avataras – nuotrauka apskritime su gyvūno „kostiumu“.
+  if (typeof AVATAR_PHOTO !== "undefined" && AVATAR_PHOTO) {
+    const emoji = { lion: "🦁", owl: "🦉", robot: "🤖", fox: "🦊", dragon: "🐉", bear: "🐻" }[a.shape];
+    let front = "";
+    if (a.shape === "owl") {
+      // Vietoj kuokštelių – išmintingos pelėdos absolvento kepurė
+      back = "";
+      front = `<rect x="78" y="44" width="44" height="18" rx="3" fill="#2b2b2b"/>
+        <polygon points="100,26 154,44 100,62 46,44" fill="#2b2b2b"/>
+        <line x1="148" y1="46" x2="148" y2="74" stroke="#ffd23f" stroke-width="3"/><circle cx="148" cy="76" r="5" fill="#ffd23f"/>`;
+    } else if (a.shape === "robot") {
+      back = `<line x1="100" y1="50" x2="100" y2="22" stroke="${d}" stroke-width="6"/><circle cx="100" cy="20" r="9" fill="#ffd23f"/>`;
+      front = `<path d="M40 112 A60 60 0 0 1 160 112" stroke="${d}" stroke-width="8" fill="none"/>
+        <rect x="28" y="96" width="20" height="36" rx="8" fill="${d}"/><rect x="152" y="96" width="20" height="36" rx="8" fill="${d}"/>`;
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="${size}" height="${size}" role="img" aria-label="${a.name}">
+    <defs><clipPath id="face-${a.id}"><circle cx="100" cy="108" r="54"/></clipPath></defs>
+    ${back}
+    <circle cx="100" cy="108" r="60" fill="${c}"/>
+    <image href="${AVATAR_PHOTO}" xlink:href="${AVATAR_PHOTO}" x="46" y="54" width="108" height="108" clip-path="url(#face-${a.id})" preserveAspectRatio="xMidYMid slice"/>
+    ${front}
+    <circle cx="158" cy="158" r="22" fill="#fff" stroke="${d}" stroke-width="4"/>
+    <text x="158" y="167" font-size="24" text-anchor="middle">${emoji}</text>
+  </svg>`;
+  }
+
   const eyes =
     a.shape === "owl"
       ? `<circle cx="78" cy="100" r="20" fill="#fff"/><circle cx="122" cy="100" r="20" fill="#fff"/>
