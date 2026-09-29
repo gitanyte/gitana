@@ -1,7 +1,13 @@
-# VBE Avatarai – anglų kalba
+# VBE Avatarai – anglų kalba socialiniuose tinkluose
 
-Avatarai-mokytojai, kurie padeda vaikams pasiruošti anglų kalbos valstybiniam brandos egzaminui (VBE)
-ir kuria įrašus socialiniams tinklams.
+Paruošti įrašai socialiniams tinklams, kuriuose avatarai-mokytojai moko vaikus anglų kalbos
+valstybinio brandos egzamino (VBE) 1 ir 2 dalies.
+
+## Paruošti įrašai – `irasai/`
+
+- `irasai/kvadratas/` – 32 paveikslėliai 1080×1080 (Instagram, Facebook)
+- `irasai/vertikalus/` – tie patys 32 įrašai 1080×1920 (TikTok, Reels, Stories)
+- `irasai/TEKSTAI.md` – kiekvieno įrašo tekstas su grotažymėmis (klausimų atsakymai – pirmajam komentarui)
 
 ## Avatarai ir jų stiprybės
 
@@ -15,22 +21,9 @@ ir kuria įrašus socialiniams tinklams.
 | 🐻 Meška Mantas | Ramybės jėga | Egzamino strategija | 2 |
 
 Grupavimas į 1 dalį (supratimas) ir 2 dalį (kūrimas) skirtas mokymuisi. Oficialią egzamino
-struktūrą visada patikrinkite [NŠA](https://www.nsa.smm.lt/) puslapyje.
+struktūrą patikrinkite [NŠA](https://www.nsa.smm.lt/) puslapyje.
 
-## Puslapiai
+## Nauji įrašai
 
-- **`index.html` – Mokymasis.** Paspaudus avatarą atsidaro jo pamokos ir mini testas.
-  Geriausias rezultatas įsimenamas naršyklėje.
-- **`social.html` – Įrašai soc. tinklams.** Pasirenkamas avataras, įrašo tipas (patarimas ar klausimas)
-  ir formatas (1080×1080 Instagram/Facebook arba 1080×1920 TikTok/Reels/Stories).
-  Galima atsisiųsti PNG paveikslėlį ir nukopijuoti tekstą su grotažymėmis. Apačioje – savaitės įrašų planas.
-
-## Paleidimas
-
-Nereikia jokio serverio ar diegimo – tiesiog atidarykite `index.html` naršyklėje.
-Norint paskelbti internete, galima įjungti **GitHub Pages** (Settings → Pages → branch).
-
-## Kaip pridėti turinio
-
-Visas turinys yra `js/avatars.js`. Norėdami pridėti pamoką ar klausimą, papildykite avataro
-`lessons` arba `quiz` sąrašą – jie iškart atsiras ir mokymosi puslapyje, ir įrašų generatoriuje.
+Turinys yra `js/avatars.js` (pamokos `lessons` ir klausimai `quiz`). Atidarykite
+`generatorius.html` naršyklėje, pasirinkite avatarą ir turinį, atsisiųskite PNG ir nukopijuokite tekstą.
