@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VBE Avatarai – įrašai</title>
+  <meta name="description" content="Kurkite įrašus socialiniams tinklams, kuriuose avatarai moko anglų kalbos VBE.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hero">
+    <h1>Įrašai socialiniams tinklams</h1>
+    <p>Pasirink avatarą ir įrašo tipą – gausi paveikslėlį ir tekstą su grotažymėmis Instagram, Facebook ar TikTok.</p>
+    <nav>
+      <a href="index.html">Mokymasis</a>
+      <a href="social.html" class="active">Įrašai soc. tinklams</a>
+    </nav>
+  </header>
+
+  <main class="studio">
+    <form id="controls" class="panel">
+      <label>Avataras
+        <select id="avatar"></select>
+      </label>
+      <label>Įrašo tipas
+        <select id="type">
+          <option value="tip">Patarimas (pamoka)</option>
+          <option value="quiz">Klausimas (testas)</option>
+        </select>
+      </label>
+      <label>Turinys
+        <select id="item"></select>
+      </label>
+      <label>Formatas
+        <select id="format">
+          <option value="square">Kvadratas 1080×1080 (Instagram, Facebook)</option>
+          <option value="story">Vertikalus 1080×1920 (TikTok, Reels, Stories)</option>
+        </select>
+      </label>
+      <div class="row">
+        <button type="button" class="btn" id="random">🎲 Atsitiktinis</button>
+        <button type="button" class="btn primary" id="download">⬇ Atsisiųsti PNG</button>
+      </div>
+      <label>Įrašo tekstas
+        <textarea id="caption" rows="9"></textarea>
+      </label>
+      <button type="button" class="btn" id="copy">📋 Kopijuoti tekstą</button>
+    </form>
+
+    <div class="preview">
+      <canvas id="canvas" width="1080" height="1080"></canvas>
+    </div>
+  </main>
+
+  <section class="plan">
+    <h2>Savaitės įrašų planas</h2>
+    <p>Kasdien vienas avataras – po savaitės vaikai bus susipažinę su visomis 1 ir 2 dalies temomis.</p>
+    <div id="plan"></div>
+  </section>
+
+  <script src="js/avatars.js"></script>
+  <script src="js/social.js"></script>
+</body>
+</html>
