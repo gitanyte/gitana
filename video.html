@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VBE Avatarai – vaizdo įrašai</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hero">
+    <h1>Vaizdo įrašų peržiūra</h1>
+    <p>TikTok ir Instagram Reels įrašai (1080×1920). Paruošti MP4 failai yra aplanke <code>video/</code>.</p>
+  </header>
+  <main class="studio">
+    <form class="panel">
+      <label>Avataras <select id="avatar"></select></label>
+      <label>Įrašo tipas
+        <select id="type">
+          <option value="tip">Patarimas</option>
+          <option value="quiz">Klausimas</option>
+        </select>
+      </label>
+      <label>Turinys <select id="item"></select></label>
+      <button type="button" class="btn primary" id="play">▶ Leisti iš naujo</button>
+    </form>
+    <div class="preview"><canvas id="canvas" width="1080" height="1920"></canvas></div>
+  </main>
+  <script src="js/avatars.js"></script>
+  <script src="js/video.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const ctx = $("canvas").getContext("2d");
+    let video = null;
+    let start = 0;
+
+    $("avatar").innerHTML = AVATARS.map((a) => `<option value="${a.id}">${a.name} – ${a.skill}</option>`).join("");
+
+    function fillItems() {
+      const a = AVATARS.find((x) => x.id === $("avatar").value);
+      const list = $("type").value === "tip" ? a.lessons.map((l) => l.title) : a.quiz.map((q) => q.q);
+      $("item").innerHTML = list.map((t, i) => `<option value="${i}">${t.slice(0, 60)}</option>`).join("");
+    }
+
+    async function load() {
+      const a = AVATARS.find((x) => x.id === $("avatar").value);
+      video = await makeVideo(a, $("type").value, Number($("item").value));
+      start = performance.now();
+    }
+
+    function tick(now) {
+      if (video) video.draw(ctx, Math.min((now - start) / 1000, video.duration));
+      requestAnimationFrame(tick);
+    }
+
+    $("avatar").addEventListener("change", () => { fillItems(); load(); });
+    $("type").addEventListener("change", () => { fillItems(); load(); });
+    $("item").addEventListener("change", load);
+    $("play").addEventListener("click", () => (start = performance.now()));
+
+    fillItems();
+    load();
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
