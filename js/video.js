@@ -78,14 +78,17 @@ async function makeVideo(a, type, idx) {
   const quiz = isTip ? null : a.quiz[idx];
 
   const measure = document.createElement("canvas").getContext("2d");
-  const inner = VIDEO_W - 240;
-  const titleFont = `800 64px ${FONT}`;
-  const bodyFont = `400 50px ${FONT}`;
-  const qFont = `700 48px ${FONT}`;
-  const optFont = `500 44px ${FONT}`;
-  const explainFont = `600 42px ${FONT}`;
-  const Q_LH = 60;
-  const OPT_LH = 54;
+  // Saugi zona: dešinėje ~150 px uždengia programėlės mygtukai, apačioje ~480 px – aprašymas.
+  const SAFE_RIGHT = 920;
+  const SAFE_BOTTOM = 1440;
+  const inner = SAFE_RIGHT - 60 - 120;
+  const titleFont = `800 58px ${FONT}`;
+  const bodyFont = `400 46px ${FONT}`;
+  const qFont = `700 44px ${FONT}`;
+  const optFont = `500 40px ${FONT}`;
+  const explainFont = `600 38px ${FONT}`;
+  const Q_LH = 54;
+  const OPT_LH = 50;
 
   const T = { header: 0, avatar: 0.3, bubble: 1.2, text: 1.8 };
   let layout;
@@ -99,8 +102,8 @@ async function makeVideo(a, type, idx) {
     T.body = T.text + titleLen + 0.3;
     T.outro = T.body + bodyLen + 1.5;
     duration = T.outro + 2.5;
-    layout = { title, titleLen, body, bodyLen, boxY: 820, avatarSize: 420, avatarY: 560 };
-    layout.boxH = 110 + title.length * 76 + 30 + body.length * 66 + 40;
+    layout = { title, titleLen, body, bodyLen, boxY: 700, avatarSize: 330, avatarY: 490 };
+    layout.boxH = 100 + title.length * 70 + 30 + body.length * 60 + 30;
   } else {
     const q = wrapLines(measure, quiz.q, qFont, inner);
     const opts = quiz.options.map((o, k) => wrapLines(measure, `${"ABCD"[k]}) ${o}`, optFont, inner - 60));
@@ -110,10 +113,11 @@ async function makeVideo(a, type, idx) {
     T.reveal = T.count + 5;
     T.outro = T.reveal + 3.5;
     duration = T.outro + 2.5;
-    const explain = wrapLines(measure, "✅ " + quiz.explain, explainFont, inner);
-    layout = { q, qLen, opts, explain, boxY: 700, avatarSize: 300, avatarY: 500 };
-    const optsH = opts.reduce((s, l) => s + l.length * OPT_LH + 30 + 14, 0);
-    layout.boxH = 190 + q.length * Q_LH + 20 + optsH + explain.length * 52 + 40;
+    // Paaiškinimas rodomas viršuje, kairėje nuo avataro, kad burbulas neišlįstų už saugios zonos.
+    const explain = wrapLines(measure, "✅ " + quiz.explain, explainFont, 600);
+    layout = { q, qLen, opts, explain, boxY: 590, avatarSize: 240, avatarY: 420 };
+    const optsH = opts.reduce((s, l) => s + l.length * OPT_LH + 26 + 12, 0);
+    layout.boxH = 170 + q.length * Q_LH + 10 + optsH + 10;
   }
 
   function draw(ctx, t) {
@@ -149,7 +153,7 @@ async function makeVideo(a, type, idx) {
     const ap = easeBack(progress(t, T.avatar, 0.8));
     const bob = Math.sin(t * (talking ? 9 : 3)) * (talking ? 10 : 14);
     const size = layout.avatarSize * ap;
-    const ax = VIDEO_W - 80 - layout.avatarSize / 2;
+    const ax = SAFE_RIGHT - 20 - layout.avatarSize / 2;
     const ay = layout.avatarY + bob;
     if (size > 1) ctx.drawImage(img, ax - size / 2, ay - size / 2, size, size);
 
@@ -157,7 +161,7 @@ async function makeVideo(a, type, idx) {
     const bp = easeBack(progress(t, T.bubble, 0.5));
     const boxX = 60;
     const boxY = layout.boxY;
-    const boxW = VIDEO_W - 120;
+    const boxW = SAFE_RIGHT - 60;
     const boxH = layout.boxH;
     if (bp > 0) {
       ctx.save();
@@ -177,23 +181,23 @@ async function makeVideo(a, type, idx) {
 
     const tx = 120;
     if (isTip) {
-      typedBlock(ctx, layout.title, titleFont, a.accent, tx, boxY + 110, 76, t, T.text, layout.titleLen);
-      const by = boxY + 110 + layout.title.length * 76 + 30;
-      typedBlock(ctx, layout.body, bodyFont, "#222", tx, by, 66, t, T.body, layout.bodyLen);
+      typedBlock(ctx, layout.title, titleFont, a.accent, tx, boxY + 100, 70, t, T.text, layout.titleLen);
+      const by = boxY + 100 + layout.title.length * 70 + 30;
+      typedBlock(ctx, layout.body, bodyFont, "#222", tx, by, 60, t, T.body, layout.bodyLen);
     } else {
       const qa = progress(t, T.text, 0.4);
       ctx.globalAlpha = qa;
       ctx.fillStyle = a.accent;
-      ctx.font = `800 60px ${FONT}`;
-      ctx.fillText("❓ Ar žinai atsakymą?", tx, boxY + 100);
+      ctx.font = `800 52px ${FONT}`;
+      ctx.fillText("❓ Ar žinai atsakymą?", tx, boxY + 90);
       ctx.globalAlpha = 1;
-      typedBlock(ctx, layout.q, qFont, "#222", tx, boxY + 190, Q_LH, t, T.text + 0.9, layout.qLen);
+      typedBlock(ctx, layout.q, qFont, "#222", tx, boxY + 170, Q_LH, t, T.text + 0.9, layout.qLen);
 
-      let oy = boxY + 190 + layout.q.length * Q_LH + 20;
+      let oy = boxY + 170 + layout.q.length * Q_LH + 10;
       const revealed = t >= T.reveal;
       layout.opts.forEach((lines, k) => {
         const op = easeOut(progress(t, T.opts + k * 0.45, 0.35));
-        const h = lines.length * OPT_LH + 30;
+        const h = lines.length * OPT_LH + 26;
         if (op > 0) {
           ctx.save();
           ctx.globalAlpha = op;
@@ -201,7 +205,7 @@ async function makeVideo(a, type, idx) {
           const right = k === quiz.answer;
           const dim = revealed && !right;
           ctx.fillStyle = revealed && right ? "#d9f5e3" : "#f3f1ec";
-          rrect(ctx, tx - 20, oy - 50, inner + 40, h, 20);
+          rrect(ctx, tx - 20, oy - 46, inner + 40, h, 20);
           ctx.fill();
           if (revealed && right) {
             ctx.strokeStyle = "#2e9e5b";
@@ -213,20 +217,20 @@ async function makeVideo(a, type, idx) {
           ctx.fillStyle = "#222";
           lines.forEach((l, j) => ctx.fillText(l, tx + (j ? 50 : 0), oy + j * OPT_LH));
           if (revealed && right) {
-            ctx.font = `800 52px ${FONT}`;
-            ctx.fillText("✅", tx + inner - 50, oy);
+            ctx.font = `800 46px ${FONT}`;
+            ctx.fillText("✅", tx + inner - 40, oy);
           }
           ctx.restore();
         }
-        oy += h + 16;
+        oy += h + 12;
       });
 
       // Atgalinis skaičiavimas
       if (t >= T.count && t < T.reveal) {
         const left = Math.ceil(T.reveal - t);
         const frac = T.reveal - t - Math.floor(T.reveal - t);
-        const cx = 250;
-        const cy = 490;
+        const cx = 170;
+        const cy = 420;
         ctx.fillStyle = "#fff";
         ctx.beginPath();
         ctx.arc(cx, cy, 80, 0, Math.PI * 2);
@@ -237,22 +241,30 @@ async function makeVideo(a, type, idx) {
         ctx.arc(cx, cy, 80, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * frac);
         ctx.stroke();
         ctx.fillStyle = a.accent;
-        ctx.font = `800 84px ${FONT}`;
+        ctx.font = `800 80px ${FONT}`;
         ctx.textAlign = "center";
         ctx.fillText(String(left), cx, cy + 30);
         ctx.fillStyle = "#fff";
         ctx.font = `700 48px ${FONT}`;
-        ctx.fillText("Pagalvok!", cx, cy + 150);
+        ctx.textAlign = "left";
+        ctx.fillText("Pagalvok!", cx + 110, cy + 16);
         ctx.textAlign = "left";
       }
 
-      // Paaiškinimas po atsakymo – burbulo apačioje
+      // Paaiškinimas po atsakymo – kortelė viršuje, kairėje nuo avataro
       if (revealed) {
-        ctx.globalAlpha = easeOut(progress(t, T.reveal + 0.4, 0.5));
+        const ep = easeOut(progress(t, T.reveal + 0.4, 0.5));
+        const eh = layout.explain.length * 48 + 44;
+        ctx.save();
+        ctx.globalAlpha = ep;
+        ctx.translate(0, (1 - ep) * 30);
+        ctx.fillStyle = "#fff";
+        rrect(ctx, 60, 330, 660, eh, 28);
+        ctx.fill();
         ctx.fillStyle = "#1f6b3b";
         ctx.font = explainFont;
-        layout.explain.forEach((l, j) => ctx.fillText(l, tx, oy + 20 + j * 52));
-        ctx.globalAlpha = 1;
+        layout.explain.forEach((l, j) => ctx.fillText(l, 90, 330 + 58 + j * 48));
+        ctx.restore();
       }
     }
 
@@ -263,17 +275,18 @@ async function makeVideo(a, type, idx) {
       ctx.globalAlpha = op;
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, VIDEO_W, VIDEO_H);
-      const big = 560 * easeBack(progress(t, T.outro + 0.2, 0.7));
-      if (big > 1) ctx.drawImage(img, VIDEO_W / 2 - big / 2, 700 - big / 2 + Math.sin(t * 3) * 14, big, big);
+      const CX = SAFE_RIGHT / 2 + 30;
+      const big = 500 * easeBack(progress(t, T.outro + 0.2, 0.7));
+      if (big > 1) ctx.drawImage(img, CX - big / 2, 640 - big / 2 + Math.sin(t * 3) * 14, big, big);
       ctx.textAlign = "center";
       ctx.fillStyle = "#fff";
-      ctx.font = `800 66px ${FONT}`;
-      ctx.fillText(`„${a.motto}“`, VIDEO_W / 2, 1100);
+      ctx.font = `800 58px ${FONT}`;
+      ctx.fillText(`„${a.motto}“`, CX, 1030, SAFE_RIGHT - 40);
       ctx.font = `600 46px ${FONT}`;
-      ctx.fillText(`— ${a.name}`, VIDEO_W / 2, 1180);
+      ctx.fillText(`— ${a.name}`, CX, 1100);
       ctx.font = `700 52px ${FONT}`;
-      ctx.fillText("Išsaugok 📌 ir sek –", VIDEO_W / 2, 1340);
-      ctx.fillText("kitas patarimas rytoj!", VIDEO_W / 2, 1410);
+      ctx.fillText("Išsaugok 📌 ir sek –", CX, 1230);
+      ctx.fillText("kitas patarimas rytoj!", CX, 1295);
       ctx.textAlign = "left";
       ctx.restore();
     }
